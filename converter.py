@@ -5,11 +5,14 @@
 
 import os, sys
 from PIL import Image
+import numpy as np
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass
 class Converter:
+    asciiShades: List[str]
 
     @staticmethod
     def openImage(fileHandle: str) -> Image:
@@ -35,8 +38,16 @@ class Converter:
         except Exception as e:
             raise Exception("There was an error while processing your image: ", e)
 
+    @staticmethod
     def transformToGrey(image: Image) -> Image:
         try:
             return image.convert('L')
         except Exception as e:
             raise Exception("There was an error while processing your image: ", e)
+
+    @staticmethod
+    def getAverage(greyImage: Image) -> np.array:
+        image = np.array(greyImage)
+        width, height = image.shape
+
+        return np.average(image.reshape(width * height))
