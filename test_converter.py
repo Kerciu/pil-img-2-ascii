@@ -1,6 +1,7 @@
 from converter import Converter
 import pytest
 from PIL import Image
+import copy
 
 
 valid_image = "436723673_960194535814578_393422992170066543_n.jpg"
@@ -43,3 +44,17 @@ def test_scaleImage_negative_dimensions():
     image = Image.new("RGB", (100, 100))
     scaled_image = Converter.scaleImage(image, -50, -50)
     assert scaled_image.size == (1, 1)
+
+
+def test_transformToGrey_success():
+    im = Image.new("RGB", (100, 100), color="red")
+    im_grey = im.convert('L')
+    result = Converter.transformToGrey(copy.deepcopy(im))
+    assert result.mode == "L"
+    assert result.size == im.size
+    assert result.tobytes() == im_grey.tobytes()
+
+
+def test_transformToGrey_exception():
+    with pytest.raises(Exception):
+        Converter.transformToGrey(None)
