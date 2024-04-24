@@ -71,3 +71,9 @@ class Converter:
                 artTxt.append(self.asciiShades[int(pivot / 255)])
 
         return "".join(artTxt)
+
+    @staticmethod
+    def renderTextFile(stringToCompute: str, fileHandle: str = None) -> None:
+        with open(fileHandle, 'w') as f:
+            f.write(stringToCompute)
+    
