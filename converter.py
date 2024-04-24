@@ -51,3 +51,23 @@ class Converter:
         width, height = image.shape
 
         return np.average(image.reshape(width * height))
+
+    def convertToASCII(self, image: Image) -> str:
+        """
+        Will take in prescaled image
+        """
+        rows, cols = image.size[0], image.size[1]
+
+        # Collect average
+        average = self.getAverage(image)
+
+        artTxt = []
+        for i in range(0, rows):
+            # Generate list of dimensions
+            artTxt.append("")
+            for j in range(0, cols):
+                # Convert to ASCII
+                pivot = int(average * len(self.asciiShades))
+                artTxt.append(self.asciiShades[int(pivot / 255)])
+
+        return "".join(artTxt)
