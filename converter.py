@@ -14,7 +14,7 @@ class Converter:
     @staticmethod
     def openImage(fileHandle: str) -> Image:
         try:
-            with Image.open(fileHandle) as im:    
+            with Image.open(fileHandle) as im:  
                 return im
 
         except FileNotFoundError:
@@ -32,5 +32,11 @@ class Converter:
 
             scaled = image.resize((newWidth, newHeight))
             return scaled
+        except Exception as e:
+            raise Exception("There was an error while processing your image: ", e)
+
+    def transformToGrey(image: Image) -> Image:
+        try:
+            return image.convert('L')
         except Exception as e:
             raise Exception("There was an error while processing your image: ", e)
