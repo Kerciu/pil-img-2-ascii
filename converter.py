@@ -3,7 +3,6 @@
 # TODO MAP PIXELS TO ASCII
 # TODO RENDER TEXT FILE
 
-import os, sys
 from PIL import Image
 import numpy as np
 from dataclasses import dataclass
@@ -16,9 +15,10 @@ class Converter:
 
     @staticmethod
     def openImage(fileHandle: str) -> Image:
+        im = None
         try:
-            with Image.open(fileHandle) as im:  
-                return im
+            im = Image.open(fileHandle)
+            return im
 
         except FileNotFoundError:
             raise FileNotFoundError("File was not found")
@@ -58,22 +58,30 @@ class Converter:
         """
         rows, cols = image.size[0], image.size[1]
 
-        # Collect average
-        average = self.getAverage(image)
-
         artTxt = []
-        for i in range(0, rows):
+        for i in range(rows):
             # Generate list of dimensions
-            artTxt.append("")
-            for j in range(0, cols):
+            rowText = ""
+            for j in range(cols):
                 # Convert to ASCII
-                pivot = int(average * len(self.asciiShades))
-                artTxt.append(self.asciiShades[int(pivot / 255)])
+                # Collect average
+                average = self.getAverage(image)
+                pivot = int(average * (len(self.asciiShades) - 1))
+                rowText += (self.asciiShades[int(pivot / 255)])
 
-        return "".join(artTxt)
+            artTxt.append(rowText)
+
+        return '\n'.join(artTxt)
 
     @staticmethod
     def renderTextFile(stringToCompute: str, fileHandle: str = None) -> None:
         with open(fileHandle, 'w') as f:
             f.write(stringToCompute)
-    
+
+    def scaleAndConvertToASCII(self, image_path: str, output_file: str, newWidth: int, newHeight: int) -> None:
+        imgObject = self.openImage(image_path)
+        scaled_image = self.scaleImage(imgObject, newWidth, newHeight)
+        grey_image = self.transformToGrey(scaled_image)
+        ascii_text = self.convertToASCII(grey_image)
+        self.renderTextFile(ascii_text, output_file)
+        imgObject.close()

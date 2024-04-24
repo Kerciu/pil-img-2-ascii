@@ -2,6 +2,7 @@ from converter import Converter
 import pytest
 from PIL import Image
 import copy
+import os
 
 
 valid_image = "436723673_960194535814578_393422992170066543_n.jpg"
@@ -79,3 +80,24 @@ def test_getAverage_white_image():
     expected_average = 255
     average = Converter.getAverage(white_image)
     assert average == expected_average
+
+
+def test_convertToASCII():
+    ascii_shades = ["@", "#", "*", "."]
+    converter = Converter(ascii_shades)
+
+    image = Image.new("L", (3, 3), color=128)
+    expected_result = "@@@###***..."
+
+    assert converter.convertToASCII(image) == expected_result
+
+
+def test_renderTextFile():
+    tmpdir = "C:\\Users\\Kacper\\Desktop\\image2ascii\\Image-to-ASCII"
+    tmp_file = os.path.join(tmpdir, "output.txt")
+
+    text_to_write = "Hello, world!"
+
+    Converter.renderTextFile(text_to_write, fileHandle=tmp_file)
+    with open(tmp_file, "r") as f:
+        assert f.read() == text_to_write
