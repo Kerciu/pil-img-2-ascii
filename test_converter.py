@@ -58,3 +58,24 @@ def test_transformToGrey_success():
 def test_transformToGrey_exception():
     with pytest.raises(Exception):
         Converter.transformToGrey(None)
+
+
+def test_getAverage():
+    grey_image = Image.new("L", (100, 100), color=128)
+    expected_average = 128
+    average = Converter.getAverage(grey_image)
+    assert average == expected_average
+
+
+def test_getAverage_black_image():
+    black_image = Image.new("L", (50, 50), color=0)
+    expected_average = 0
+    average = Converter.getAverage(black_image)
+    assert average == expected_average
+
+
+def test_getAverage_white_image():
+    white_image = Image.new("L", (200, 200), color=255)
+    expected_average = 255
+    average = Converter.getAverage(white_image)
+    assert average == expected_average
