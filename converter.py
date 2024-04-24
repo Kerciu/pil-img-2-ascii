@@ -5,22 +5,32 @@
 
 import os, sys
 from PIL import Image
+from dataclasses import dataclass
 
 
-def openImage(fileHandle: str) -> Image:
-    try:
-        imageData = {}
-        with Image.open(fileHandle) as im:
-            imageData["height"] = im.height
-            imageData["mode"] = im.mode
-            imageData["width"] = im.width
-            imageData["colors"] = im.getcolors()
-            imageData["histogram"] = im.histogram()
-            imageData["format"] = im.format
+@dataclass
+class Converter:
 
-    except FileNotFoundError:
-        raise FileNotFoundError("File was not found")
-    except Exception as e:
-        raise Exception("There was an error while processing your image: ", e)
+    @staticmethod
+    def openImage(fileHandle: str) -> Image:
+        try:
+            with Image.open(fileHandle) as im:    
+                return im
 
-    return imageData
+        except FileNotFoundError:
+            raise FileNotFoundError("File was not found")
+        except Exception as e:
+            raise Exception("There was an error while processing your image: ", e)
+
+    @staticmethod
+    def scaleImage(image: Image, newWidth: int, newHeight: int) -> Image:
+        try:
+            if newWidth <= 0:
+                newWidth = 1
+            if newHeight <= 0:
+                newHeight = 1
+
+            scaled = image.resize((newWidth, newHeight))
+            return scaled
+        except Exception as e:
+            raise Exception("There was an error while processing your image: ", e)
