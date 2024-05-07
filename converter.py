@@ -1,14 +1,8 @@
-# TODO SCALE THE IMAGE
-# TODO TRANSFORM TO THE SHADES OF GREY
-# TODO MAP PIXELS TO ASCII
-# TODO RENDER TEXT FILE
-
 from PIL import Image
 import numpy as np
 from dataclasses import dataclass
 from typing import List
 import copy
-import math
 
 
 @dataclass
@@ -31,11 +25,12 @@ class Converter:
     def scaleImage(image: Image, newWidth: int, newHeight: int) -> Image:
         try:
             image = copy.deepcopy(image)
-
             if newWidth <= 0:
-                newWidth = 1
+                newWidth = image.width
             if newHeight <= 0:
-                newHeight = 1
+                newHeight = image.height
+
+            scaled = image.resize((newWidth, newHeight))
 
             scaled = image.resize((newWidth, newHeight))
             return scaled
