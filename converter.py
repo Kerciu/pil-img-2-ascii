@@ -7,6 +7,8 @@ from PIL import Image
 import numpy as np
 from dataclasses import dataclass
 from typing import List
+import copy
+import math
 
 
 @dataclass
@@ -28,6 +30,8 @@ class Converter:
     @staticmethod
     def scaleImage(image: Image, newWidth: int, newHeight: int) -> Image:
         try:
+            image = copy.deepcopy(image)
+
             if newWidth <= 0:
                 newWidth = 1
             if newHeight <= 0:
@@ -47,41 +51,39 @@ class Converter:
 
     @staticmethod
     def getAverage(greyImage: Image) -> np.array:
-        image = np.array(greyImage)
-        width, height = image.shape
+        return np.average(np.array(greyImage))
 
-        return np.average(image.reshape(width * height))
-
-    def convertToASCII(self, image: Image) -> str:
+    def convertToASCII(self, image: Image, scale: float) -> str:
         """
         Will take in prescaled image
         """
-        rows, cols = image.size[0], image.size[1]
+        # proportionFactor = 0.55
+        W, H = image.size
+        # tileHeight = int(H / scale)
 
         artTxt = []
-        for i in range(rows):
-            # Generate list of dimensions
-            rowText = ""
-            for j in range(cols):
-                # Convert to ASCII
-                # Collect average
-                average = self.getAverage(image)
-                pivot = int(average * (len(self.asciiShades) - 1))
-                rowText += (self.asciiShades[int(pivot / 255)])
+        for y in range(0, H):
+            for x in range(0, W):
+                x_2 = x + 1
+                y_2 = y + 1
 
-            artTxt.append(rowText)
+                croppedImage = image.crop((x, y, x_2, y_2))
+                average = self.getAverage(self.transformToGrey(croppedImage))
 
-        return '\n'.join(artTxt)
+                pivot = int(average * (len(self.asciiShades) - 1) / 255)
+                artTxt.append(self.asciiShades[pivot])
+
+            artTxt.append('\n')
+        return ''.join(artTxt)
 
     @staticmethod
-    def renderTextFile(stringToCompute: str, fileHandle: str = None) -> None:
-        with open(fileHandle, 'w') as f:
-            f.write(stringToCompute)
-
-    def scaleAndConvertToASCII(self, image_path: str, output_file: str, newWidth: int, newHeight: int) -> None:
-        imgObject = self.openImage(image_path)
-        scaled_image = self.scaleImage(imgObject, newWidth, newHeight)
-        grey_image = self.transformToGrey(scaled_image)
-        ascii_text = self.convertToASCII(grey_image)
-        self.renderTextFile(ascii_text, output_file)
-        imgObject.close()
+    def renderTextFile(stringToCompute: str, fileHandle: str) -> None:
+        try:
+            with open(fileHandle, 'w') as f:
+                f.write(stringToCompute)
+        except IOError as e:
+            print("Error writing to file:", e)
+        except Exception as e:
+            print("An error occurred:", e)
+        finally:
+            f.close()
