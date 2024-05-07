@@ -43,10 +43,3 @@ py ./mainApp.py --file-name image.jpg --output-file result.txt --dim-width 100 -
 ---
 
 If you have any questions or suggestions, feel free to ask.
-
-                             }((((||||||((()|                              
-                                                                           
-                                                                           
-                                                                           
-                                                                           
-                                                                           
